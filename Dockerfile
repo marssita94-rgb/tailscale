@@ -9,9 +9,9 @@ RUN curl -fsSL https://tailscale.com/install.sh | sh
 
 WORKDIR /app
 
-COPY tailscale-start.sh /app/tailscale-start.sh
-RUN chmod +x /app/tailscale-start.sh
+COPY tailscale-start.sh tailscale-start.sh
+RUN chmod +x tailscale-start.sh
 
 EXPOSE 8080
 
-CMD ["/app/tailscale-start.sh"]
+CMD ["tailscale-start.sh"]
