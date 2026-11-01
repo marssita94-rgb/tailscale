@@ -1,28 +1,17 @@
-FROM debian:latest
-WORKDIR /render
+FROM node:18-alpine
 
-ARG TAILSCALE_VERSION
-ENV TAILSCALE_VERSION=$TAILSCALE_VERSION
+# Instalează Tailscale
+RUN curl -fsSL https://tailscale.com/install.sh | sh
 
-RUN apt-get -qq update \
-  && apt-get -qq install --upgrade -y --no-install-recommends \
-    apt-transport-https \
-    ca-certificates \
-    netcat-openbsd \
-    wget \
-    dnsutils \
-  > /dev/null \
-  && apt-get -qq clean \
-  && rm -rf \
-    /var/lib/apt/lists/* \
-    /tmp/* \
-    /var/tmp/* \
-  && :
+# Sau alternativ, cu curl direct:
+# RUN curl -o /usr/bin/tailscale -LO https://pkgs.tailscale.com/stable/tailscale_1.66.2_amd64.tgz
+# RUN tar -xzf tailscale_1.66.2_amd64.tgz tailscale && rm tailscale_1.66.2_amd64.tgz
 
-RUN echo "+search +short" > /root/.digrc
-COPY run-tailscale.sh /render/
+WORKDIR /app
 
-COPY install-tailscale.sh /tmp
-RUN /tmp/install-tailscale.sh && rm -r /tmp/*
+COPY tailscale-start.sh /app/tailscale-start.sh
+RUN chmod +x /app/tailscale-start.sh
 
-CMD ./run-tailscale.sh
+EXPOSE 8080
+
+CMD ["/app/tailscale-start.sh"]
